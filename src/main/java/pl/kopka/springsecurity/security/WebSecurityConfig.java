@@ -9,7 +9,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import pl.kopka.springsecurity.model.MyUser;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,10 +23,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        MyUser user = new MyUser("user", getPasswordEncoder().encode("user"),
+        User user = new User("user", getPasswordEncoder().encode("user"),
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
 
-        MyUser admin = new MyUser("admin", getPasswordEncoder().encode("admin"),
+        User admin = new User("admin", getPasswordEncoder().encode("admin"),
                 Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"), new SimpleGrantedAuthority("ROLE_ADMIN")));
 
         auth.inMemoryAuthentication().withUser(user);
@@ -44,6 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().permitAll()
                 .and().logout().logoutSuccessUrl("/papa");
     }
+
 
 
 }

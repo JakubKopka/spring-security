@@ -12,15 +12,11 @@ public class MainController {
 
     @GetMapping
     public String home(Principal principal) {
-        if(principal != null){
+        try {
             return "Cześć " + principal.getName();
+        } catch (NullPointerException ex) {
+            return "Cześć nieznajomy";
         }
-        return "Cześć nieznajomy";
-//        try {
-//            return "Cześć " + principal.getName();
-//        } catch (NullPointerException ex) {
-//            return "Cześć nieznajomy";
-//        }
     }
 
     @GetMapping("/admin")
