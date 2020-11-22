@@ -42,7 +42,7 @@ public class AppUser implements UserDetails {
     private Set<AppRole> appRoles = new HashSet<>();
 
     @Transient
-    private String role;
+    private String rememberMeValue;
 
     public AppUser(String username, String password, boolean isEnabled, @Pattern(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$") String mail) {
         this.username = username;

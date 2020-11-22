@@ -1,5 +1,7 @@
 package pl.kopka.springsecurity.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,8 @@ import java.util.UUID;
 
 @Service
 public class AppUserService {
+
+    Logger logger = LoggerFactory.getLogger(MailSenderService.class);
 
     private final AppUserRepo appUserRepo;
     private final RoleRepo roleRepo;
@@ -48,13 +52,20 @@ public class AppUserService {
         String url = createVerificationUrl(false, tokenUser, request);
         mailSenderService.sendVerificationMailToUser(appUser, url);
 
-        if (appUser.getRole().equals("ROLE_ADMIN")) {
-            String tokenAdmin = UUID.randomUUID().toString();
-            VerificationToken vtAdmin = new VerificationToken(tokenAdmin, appUser);
-            verificationTokenRepo.save(vtAdmin);
+        int rememberMeValue = Integer.parseInt(appUser.getRememberMeValue());
+        switch (rememberMeValue){
+            case 7:
 
-            String adminUrl = createVerificationUrl(true, tokenAdmin, request);
-            mailSenderService.sendVerificationMailToAdmin(appUser, adminUrl);
+                break;
+            case 21:
+
+                break;
+            case 28:
+
+                break;
+            default:
+                logger.error("Bad value of rememberMeValue!");
+                break;
         }
     }
 
