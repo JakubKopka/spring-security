@@ -9,8 +9,13 @@ import org.springframework.context.event.EventListener;
 @SpringBootApplication
 public class SpringSecurityApplication {
 
+    private CesarPasswordEncoder cesarPasswordEncoder;
+    
     @Autowired
-    CesarPasswordEncoder cesarPasswordEncoder;
+    public SpringSecurityApplication(CesarPasswordEncoder cesarPasswordEncoder){
+        this.cesarPasswordEncoder = cesarPasswordEncoder;
+    }
+        
 
     public static void main(String[] args) {
         SpringApplication.run(SpringSecurityApplication.class, args);
