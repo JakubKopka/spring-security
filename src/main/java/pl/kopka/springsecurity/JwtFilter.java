@@ -31,10 +31,10 @@ import java.util.Collections;
 public class JwtFilter extends OncePerRequestFilter {
 
     @Value("${privateKey}")
-    String privateKey;
+    private String privateKey;
 
     @Value("${publicKey}")
-    String publicKey;
+    private String publicKey;
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
