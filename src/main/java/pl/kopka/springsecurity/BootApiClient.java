@@ -3,7 +3,6 @@ package pl.kopka.springsecurity;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -67,10 +66,10 @@ public class BootApiClient {
 
 
     private PrivateKey getPrivateKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
-        String privateKey = getKey("private.key");
+        String privateKey = getKey("private.pem");
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKey));
         KeyFactory kf = KeyFactory.getInstance("RSA");
-
+        System.out.println(privateKey);
         return kf.generatePrivate(keySpec);
     }
 
