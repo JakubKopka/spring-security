@@ -5,7 +5,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,9 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -74,7 +70,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private PrivateKey getPrivateKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
-        String privateKey = getKey("private.key");
+        String privateKey = getKey("private.pem");
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKey));
         KeyFactory kf = KeyFactory.getInstance("RSA");
         PrivateKey key = kf.generatePrivate(keySpec);
@@ -82,7 +78,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private PublicKey getPublicKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
-        String publicKey = getKey("public.key");
+        String publicKey = getKey("public.pem");
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64.getDecoder().decode(publicKey));
         KeyFactory kf = KeyFactory.getInstance("RSA");
         PublicKey key = kf.generatePublic(keySpec);
