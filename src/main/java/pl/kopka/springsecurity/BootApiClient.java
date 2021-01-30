@@ -9,11 +9,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -21,6 +23,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Controller
@@ -64,22 +67,14 @@ public class BootApiClient {
         return JWT.create().withClaim("admin", isAdmin).sign(algorithm);
     }
 
+    private byte[] getKey(String filename) throws IOException {
+        return Files.readAllBytes(Paths.get("src/main/resources/" + filename));
+    }
 
     private PrivateKey getPrivateKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
-        String privateKey = getKey("private.pem");
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKey));
+        byte[] keyBytes = getKey("private_key.der");
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
         KeyFactory kf = KeyFactory.getInstance("RSA");
-        System.out.println(privateKey);
         return kf.generatePrivate(keySpec);
     }
-
-    private String getKey(String filename) throws IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource(filename).getFile());
-        if(!file.exists()){
-            throw new IOException(filename + " does NOT exists!");
-        }
-        return new String(Files.readAllBytes(file.toPath()));
-    }
-
 }
