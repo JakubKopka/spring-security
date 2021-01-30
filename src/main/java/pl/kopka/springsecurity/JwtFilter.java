@@ -14,8 +14,9 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -25,7 +26,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
 import java.util.Collections;
 
 public class JwtFilter extends OncePerRequestFilter {
@@ -45,6 +45,10 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 
+    private byte[] getFile(String filename) throws IOException {
+        return Files.readAllBytes(Paths.get("src/main/resources/" + filename));
+    }
+
     private UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(String authorization) throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
         PrivateKey privateKey = getPrivateKey();
         PublicKey publicKey = getPublicKey();
@@ -60,29 +64,18 @@ public class JwtFilter extends OncePerRequestFilter {
         return new UsernamePasswordAuthenticationToken(name, null, Collections.singleton(simpleGrantedAuthority));
     }
 
-    private String getKey(String filename) throws IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource(filename).getFile());
-        if(!file.exists()){
-            throw new IOException(filename + " does NOT exists!");
-        }
-        return new String(Files.readAllBytes(file.toPath()));
-    }
-
     private PrivateKey getPrivateKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
-        String privateKey = getKey("private.pem");
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKey));
+        byte[] keyBytes = getFile("private_key.der");
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
         KeyFactory kf = KeyFactory.getInstance("RSA");
-        PrivateKey key = kf.generatePrivate(keySpec);
-        return key;
+        return kf.generatePrivate(keySpec);
     }
 
     private PublicKey getPublicKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
-        String publicKey = getKey("public.pem");
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64.getDecoder().decode(publicKey));
+        byte[] keyBytes = getFile("public_key.der");
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
         KeyFactory kf = KeyFactory.getInstance("RSA");
-        PublicKey key = kf.generatePublic(keySpec);
-        return key;
+        return kf.generatePublic(keySpec);
     }
 
 
